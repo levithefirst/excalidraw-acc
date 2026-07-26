@@ -4,7 +4,7 @@ import { buildExcalidraw, validateFile } from "../../../lib/excalidraw.js";
 import { fetchAvatars } from "../../../lib/avatars.js";
 import { EXAMPLES } from "../../../lib/examples.js";
 
-export const maxDuration = 60;
+export const maxDuration = 10; // hobby plan ceiling — two haiku calls + parallel avatar fetches fit comfortably
 
 const MODEL = process.env.MODEL || "claude-haiku-4-5-20251001";
 const DAILY_LIMIT = Number(process.env.DAILY_LIMIT || 10);
