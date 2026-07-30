@@ -8,8 +8,8 @@
  * server, and the browser never sees a raw metadata payload.
  */
 
-import { makeTransport } from '../../../lib/datahub/transport';
-import { DataHubOrchestrator } from '../../../lib/datahub/orchestrator';
+import { makeTransport } from '../../../../lib/datahub/transport';
+import { DataHubOrchestrator } from '../../../../lib/datahub/orchestrator';
 
 export const maxDuration = 60;
 
