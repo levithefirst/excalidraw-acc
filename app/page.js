@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Preview from "./components/Preview";
+import DataHubPanel from "./components/DataHubPanel";
 
 const EXAMPLES = [
   { id: "zk-rollup", label: "zk rollup, explained" },
@@ -12,6 +13,8 @@ const EXAMPLES = [
 const STAGES = ["reading your content…", "drafting the structure…", "drawing the geometry…", "packing your file…"];
 
 export default function Home() {
+  const [mode, setMode] = useState("prompt"); // "prompt" | "datahub"
+
   const [content, setContent] = useState("");
   const [maxColors, setMaxColors] = useState(3);
   const [style, setStyle] = useState("sketch");
@@ -67,6 +70,14 @@ export default function Home() {
     });
   }
 
+  // DataHubPanel does its own fetching and hands back a finished scene, so
+  // this is the whole bridge: no request here, just take what it built.
+  function onDataHubScene(scene, suggestedFilename) {
+    setError("");
+    setDoc(scene);
+    setFilename(suggestedFilename || "diagram.excalidraw");
+  }
+
   function download() {
     const blob = new Blob([JSON.stringify(doc)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -87,72 +98,85 @@ export default function Home() {
         people in it and a color budget you control. not a screenshot.
       </p>
 
-      <div className="card">
-        <label htmlFor="content">
-          your content <span className="hint">— a thread, an explainer, meeting notes, anything</span>
-        </label>
-        <textarea
-          id="content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="how a crypto wallet works: your wallet holds keys, not coins. when you send funds, it signs a transaction with your private key and broadcasts it to the network..."
-        />
-        <div className="chips" aria-label="instant examples">
-          <span className="chips-label">or try one:</span>
-          {EXAMPLES.map((ex) => (
-            <button key={ex.id} type="button" className="chip" disabled={busy} onClick={() => generate({ example: ex.id })}>
-              {ex.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="row">
-          <div className="field">
-            <label id="colors-label">
-              color budget <span className="hint">— max colors</span>
-            </label>
-            <div className="seg" role="group" aria-labelledby="colors-label">
-              {[2, 3, 4, 5].map((n) => (
-                <button key={n} type="button" aria-pressed={maxColors === n} onClick={() => setMaxColors(n)}>
-                  {n}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="field">
-            <label id="style-label">style</label>
-            <div className="seg wide" role="group" aria-labelledby="style-label">
-              <button type="button" aria-pressed={style === "sketch"} onClick={() => setStyle("sketch")}>
-                sketch
-              </button>
-              <button type="button" aria-pressed={style === "clean"} onClick={() => setStyle("clean")}>
-                clean
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="field">
-            <label htmlFor="handles">
-              avatars <span className="hint">— x handles, comma separated (optional)</span>
-            </label>
-            <input
-              id="handles"
-              type="text"
-              value={handles}
-              onChange={(e) => setHandles(e.target.value)}
-              placeholder="levithefirst, anthropicai"
-            />
-          </div>
-        </div>
-
-        <button className="generate" onClick={generateFromInput} disabled={busy || content.trim().length < 20}>
-          {busy ? STAGES[stage] : "generate .excalidraw"}
+      <div className="seg wide" role="group" aria-label="input mode" style={{ marginBottom: 16 }}>
+        <button type="button" aria-pressed={mode === "prompt"} onClick={() => setMode("prompt")}>
+          prompt
         </button>
-
-        {error && <p className="status error">{error}</p>}
+        <button type="button" aria-pressed={mode === "datahub"} onClick={() => setMode("datahub")}>
+          DataHub
+        </button>
       </div>
+
+      {mode === "prompt" ? (
+        <div className="card">
+          <label htmlFor="content">
+            your content <span className="hint">— a thread, an explainer, meeting notes, anything</span>
+          </label>
+          <textarea
+            id="content"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="how a crypto wallet works: your wallet holds keys, not coins. when you send funds, it signs a transaction with your private key and broadcasts it to the network..."
+          />
+          <div className="chips" aria-label="instant examples">
+            <span className="chips-label">or try one:</span>
+            {EXAMPLES.map((ex) => (
+              <button key={ex.id} type="button" className="chip" disabled={busy} onClick={() => generate({ example: ex.id })}>
+                {ex.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="row">
+            <div className="field">
+              <label id="colors-label">
+                color budget <span className="hint">— max colors</span>
+              </label>
+              <div className="seg" role="group" aria-labelledby="colors-label">
+                {[2, 3, 4, 5].map((n) => (
+                  <button key={n} type="button" aria-pressed={maxColors === n} onClick={() => setMaxColors(n)}>
+                    {n}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="field">
+              <label id="style-label">style</label>
+              <div className="seg wide" role="group" aria-labelledby="style-label">
+                <button type="button" aria-pressed={style === "sketch"} onClick={() => setStyle("sketch")}>
+                  sketch
+                </button>
+                <button type="button" aria-pressed={style === "clean"} onClick={() => setStyle("clean")}>
+                  clean
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="field">
+              <label htmlFor="handles">
+                avatars <span className="hint">— x handles, comma separated (optional)</span>
+              </label>
+              <input
+                id="handles"
+                type="text"
+                value={handles}
+                onChange={(e) => setHandles(e.target.value)}
+                placeholder="levithefirst, anthropicai"
+              />
+            </div>
+          </div>
+
+          <button className="generate" onClick={generateFromInput} disabled={busy || content.trim().length < 20}>
+            {busy ? STAGES[stage] : "generate .excalidraw"}
+          </button>
+
+          {error && <p className="status error">{error}</p>}
+        </div>
+      ) : (
+        <DataHubPanel onScene={onDataHubScene} />
+      )}
 
       {doc && (
         <div className="result">
