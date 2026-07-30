@@ -6,7 +6,7 @@
  * source of truth instead of a thing you describe in prose.
  */
 
-import { makeTransport } from '../../../lib/datahub/transport';
+import { makeTransport } from '../../../../lib/datahub/transport';
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
