@@ -10,7 +10,7 @@
  * no browser storage. all state lives in react.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MODES, annotate, applyDescription, applyTag, buildGraph, render, saveDiagram, searchEntities, summarize, } from '../lib/datahub/client';
+import { MODES, annotate, applyDescription, applyTag, buildGraph, render, saveDiagram, searchEntities, summarize, } from '../../lib/datahub/client';
 const T = {
     bg: '#161616',
     raised: '#1d1d1d',
