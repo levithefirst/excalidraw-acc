@@ -13,7 +13,7 @@
  * can silently rewrite a production catalog is not a demo anyone should run.
  */
 
-import { makeTransport } from '../../../lib/datahub/transport';
+import { makeTransport } from '../../../../lib/datahub/transport';
 
 function tagUrn(name) {
   // datahub tag urns are urn:li:tag:<name>. create-on-write is the default
