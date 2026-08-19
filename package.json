@@ -2,10 +2,12 @@
   "name": "sketchdrop",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test:uniswap-transport": "node scripts/test-uniswap-transport.mjs"
   },
   "dependencies": {
     "@excalidraw/excalidraw": "^0.18.1",
